@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Instrumentos del Servicio Civil</title>
+<meta name="description" content="Dashboard de opiniones técnicas de SERVIR sobre CAP Provisional, CPE y MPP, 2014–2026">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<style>
+:root{
+  --bg:#f6f4ef; --card:#ffffff; --ink:#1d2430; --muted:#5d6675; --line:#e2ded4;
+  --capp:#2a6f97; --cpe:#c8553d; --mpp:#5b8c3e; --fav:#2a6f97; --obs:#d9893a; --accent:#8a3b12;
+  --chip:#ece8de;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#14181f; --card:#1c222b; --ink:#e8e6e1; --muted:#a2a9b5; --line:#2e3642;
+    --capp:#5aa6d6; --cpe:#e57a63; --mpp:#86b866; --fav:#5aa6d6; --obs:#eaa357; --accent:#f0a274; --chip:#262d38;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#14181f; --card:#1c222b; --ink:#e8e6e1; --muted:#a2a9b5; --line:#2e3642;
+  --capp:#5aa6d6; --cpe:#e57a63; --mpp:#86b866; --fav:#5aa6d6; --obs:#eaa357; --accent:#f0a274; --chip:#262d38;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 Inter,system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+header{padding:40px 0 20px;border-bottom:1px solid var(--line)}
+.eyebrow{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);font-weight:600}
+h1{font-family:"Source Serif 4",Georgia,serif;font-size:clamp(28px,4.4vw,44px);line-height:1.12;margin:8px 0 14px;max-width:24ch}
+h2{font-family:"Source Serif 4",Georgia,serif;font-size:24px;margin:0 0 6px}
+.lead{max-width:72ch;color:var(--muted);margin:0 0 10px}
+.q{border-left:3px solid var(--accent);padding:6px 0 6px 14px;font-weight:500;max-width:72ch;margin:16px 0}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.meta span{background:var(--chip);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--muted)}
+.filters{position:sticky;top:0;z-index:1000;background:var(--bg);border-bottom:1px solid var(--line);padding:12px 0}
+.frow{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}
+.f label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px;font-weight:500}
+select,input[type=search]{font:inherit;font-size:14px;padding:7px 10px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.seg{display:flex;gap:4px;flex-wrap:wrap}
+.seg button{font:inherit;font-size:13px;border:1px solid var(--line);background:var(--card);color:var(--muted);padding:6px 11px;border-radius:8px;cursor:pointer}
+.seg button.on{color:#fff;border-color:transparent}
+.seg button[data-i="CAP-P"].on{background:var(--capp)} .seg button[data-i="CPE"].on{background:var(--cpe)} .seg button[data-i="MPP"].on{background:var(--mpp)}
+#reset{font:inherit;font-size:13px;background:none;border:none;color:var(--accent);cursor:pointer;text-decoration:underline;padding:8px 0}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:22px 0}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.kpi .l{font-size:12px;color:var(--muted);font-weight:500}
+.kpi .v{font-family:"Source Serif 4",serif;font-size:32px;font-weight:700;margin:4px 0 2px;font-variant-numeric:tabular-nums}
+.kpi .s{font-size:12px;color:var(--muted)}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.card h3{font-size:15px;margin:0 0 2px} .card p.sub{font-size:13px;color:var(--muted);margin:0 0 12px}
+.ch{position:relative;height:300px}
+#map{height:420px;border-radius:8px;background:var(--bg)}
+.span2{grid-column:1/-1}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px;vertical-align:-1px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-weight:600;font-size:12px}
+td.n{text-align:right;font-variant-numeric:tabular-nums}
+.tbl{max-height:380px;overflow:auto}
+section{margin:36px 0}
+.find{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.find .card b{font-family:"Source Serif 4",serif;font-size:30px;display:block;color:var(--accent)}
+.cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.cols ul{padding-left:18px;margin:6px 0} .cols li{margin:4px 0;font-size:14px}
+footer{border-top:1px solid var(--line);padding:22px 0 40px;color:var(--muted);font-size:13px}
+a{color:var(--accent)}
+.leaflet-container{font:inherit}
+.info{background:var(--card);color:var(--ink);padding:6px 10px;border-radius:6px;border:1px solid var(--line);font-size:13px}
+@media (max-width:820px){.grid,.find,.cols{grid-template-columns:1fr}.span2{grid-column:auto}#map{height:340px}}
+</style>
+</head>
+<body>
+<header>
+ <div class="wrap">
+  <div class="eyebrow">Tarea 3 · Python Intermedio · Servicio Civil peruano</div>
+  <h1>¿Quién ordena su gente? Doce años de opiniones técnicas de SERVIR</h1>
+  <p class="lead">Para crear, modificar o reordenar sus puestos, las entidades públicas necesitan un informe técnico de SERVIR sobre su <b>CAP Provisional</b> (cuadro de puestos del régimen anterior), su <b>CPE</b> (cuadro de puestos del régimen del Servicio Civil) o su <b>MPP</b> (manual de perfiles de puestos). Cada informe es favorable u observa la propuesta. Este tablero reúne esos pronunciamientos para ver dónde, cuándo y con qué éxito avanzan las entidades.</p>
+  <p class="q">Pregunta: ¿Cómo han evolucionado entre 2014 y 2026 las opiniones técnicas de SERVIR sobre los instrumentos de gestión de puestos, en qué niveles de gobierno y regiones se concentran, y qué tan seguido se observan las propuestas?</p>
+  <div class="meta"><span>Perú · 25 regiones · 3 niveles de gobierno</span><span>2014 – oct. 2026</span><span id="metaN"></span><span>Fuente: informes técnicos SERVIR-GDSRH</span></div>
+ </div>
+</header>
+
+<div class="filters">
+ <div class="wrap frow">
+  <div class="f"><label>Instrumento</label><div class="seg" id="fInst">
+   <button data-i="CAP-P" class="on">CAP Provisional</button><button data-i="CPE" class="on">CPE</button><button data-i="MPP" class="on">MPP</button></div></div>
+  <div class="f"><label for="fNivel">Nivel de gobierno</label><select id="fNivel"><option value="">Todos</option><option>NACIONAL</option><option>REGIONAL</option><option>LOCAL</option></select></div>
+  <div class="f"><label for="fReg">Región</label><select id="fReg"><option value="">Todas</option></select></div>
+  <div class="f"><label for="fDesde">Desde</label><select id="fDesde"></select></div>
+  <div class="f"><label for="fHasta">Hasta</label><select id="fHasta"></select></div>
+  <button id="reset">Limpiar filtros</button>
+ </div>
+</div>
+
+<main class="wrap">
+ <div class="kpis">
+  <div class="kpi"><div class="l">Opiniones técnicas emitidas</div><div class="v" id="k1">–</div><div class="s" id="k1s"></div></div>
+  <div class="kpi"><div class="l">Entidades con al menos un informe favorable</div><div class="v" id="k2">–</div><div class="s" id="k2s"></div></div>
+  <div class="kpi"><div class="l">Tasa de observación</div><div class="v" id="k3">–</div><div class="s">observados ÷ total de opiniones</div></div>
+  <div class="kpi"><div class="l">Región con más opiniones</div><div class="v" id="k4" style="font-size:20px;line-height:1.2">–</div><div class="s" id="k4s"></div></div>
+  <div class="kpi"><div class="l">Favorables que son modificaciones</div><div class="v" id="k5">–</div><div class="s">de los informes favorables, frente a primeras propuestas</div></div>
+ </div>
+
+ <div class="grid">
+  <div class="card span2"><h3>Opiniones por año e instrumento</h3><p class="sub">Número de informes técnicos (favorables y observados)</p><div class="ch"><canvas id="cAnio"></canvas></div></div>
+  <div class="card"><h3>Mapa: opiniones por región</h3><p class="sub">Haz clic en una región para filtrar el tablero. Lima agrupa Lima Metropolitana y Lima Provincias.</p><div id="map"></div></div>
+  <div class="card"><h3>Ranking regional</h3><p class="sub">Opiniones por región, separadas en favorables y observadas</p><div class="ch" style="height:420px"><canvas id="cReg"></canvas></div></div>
+  <div class="card"><h3>¿Qué tan seguido se observa una propuesta?</h3><p class="sub">Tasa de observación por nivel de gobierno</p><div class="ch"><canvas id="cNivel"></canvas></div></div>
+  <div class="card"><h3>Tasa de observación en el tiempo</h3><p class="sub">Por nivel de gobierno; solo años con 10 o más opiniones</p><div class="ch"><canvas id="cObsT"></canvas></div></div>
+  <div class="card span2"><h3>Buscar una entidad</h3><p class="sub">Historial de opiniones de las entidades que cumplen los filtros</p>
+   <input type="search" id="q" placeholder="Ej.: Universidad Nacional, UGEL, Municipalidad…" style="width:100%;max-width:420px;margin-bottom:10px">
+   <div class="tbl"><table><thead><tr><th>Entidad</th><th>Región</th><th>Nivel</th><th>CAP-P</th><th>CPE</th><th>MPP</th><th>Observados</th><th>Último año</th></tr></thead><tbody id="tb"></tbody></table></div>
+   <div class="legend" id="tbn"></div>
+  </div>
+ </div>
+
+ <section>
+  <h2>Tres hallazgos</h2>
+  <div class="find">
+   <div class="card"><b>65 %</b><h3>El CAP "provisional" se volvió permanente</h3><p>De 2 714 informes favorables de CAP Provisional, 1 754 (65 %) aprueban modificaciones y no una primera propuesta. 339 entidades tienen tres o más CAP-P favorables. El instrumento pensado como transitorio mientras se pasa al régimen del Servicio Civil sigue siendo el que más trabajo genera: es el 90 % de todas las opiniones.</p></div>
+   <div class="card"><b>74 % vs. 11 %</b><h3>Las municipalidades son las más observadas</h3><p>Casi tres de cada cuatro propuestas de gobiernos locales reciben observaciones, frente al 25 % de las entidades nacionales y el 11 % de las regionales. La brecha se está cerrando: la tasa local bajó de alrededor de 80 % (2017–2023) a 50 % en 2025 y 41 % en 2026.</p></div>
+   <div class="card"><b>190 de 258</b><h3>El tránsito (CPE) llega tarde y de golpe</h3><p>El 74 % de todas las opiniones sobre CPE se emitió en 2024. Hasta octubre de 2026, 167 entidades tenían un CPE favorable, frente a 966 con CAP Provisional favorable: por cada entidad que avanza al nuevo régimen, casi seis siguen ajustando el cuadro antiguo.</p></div>
+  </div>
+ </section>
+
+ <section>
+  <h2>Metodología, fuentes y limitaciones</h2>
+  <div class="cols">
+   <div class="card"><h3>Metodología</h3><ul>
+    <li>Se partió de la matriz consolidada de informes técnicos de la GDSRH/DDSRH de SERVIR (4 369 registros).</li>
+    <li>Se conservaron solo CAP Provisional, CPE y MPP con opinión FAVORABLE u OBSERVADO entre 2014 y 2026; se eliminaron duplicados por número de informe: quedan <span id="mN"></span> opiniones.</li>
+    <li>Se normalizaron niveles de gobierno y regiones, y se clasificó cada favorable como primera propuesta o modificación.</li>
+    <li>Cada entidad se cruzó con un maestro de entidades públicas con ubigeo INEI para ubicarla en el mapa.</li>
+    <li>Tasa de observación = observados ÷ (favorables + observados).</li></ul></div>
+   <div class="card"><h3>Fuentes</h3><ul>
+    <li>Informes técnicos de SERVIR (GDSRH/DDSRH), publicados en <a href="https://www.gob.pe/servir">gob.pe/servir</a>.</li>
+    <li>Normativa: Ley N.° 30057 y Directiva N.° 006-2021-SERVIR-GDSRH (CAP Provisional, CPE, MPP).</li>
+    <li>Ubigeo y límites departamentales: INEI, vía <a href="https://github.com/juaneladio/peru-geojson">peru-geojson</a>.</li>
+    <li>Corte de la base: octubre de 2026.</li></ul></div>
+   <div class="card"><h3>Limitaciones</h3><ul>
+    <li>Cuenta informes, no entidades: una entidad puede tener varios informes en un año.</li>
+    <li>Una observación no es un rechazo: la entidad corrige y vuelve a presentar.</li>
+    <li>En 2014–2015 hay muy pocos registros; 2026 está incompleto (hasta octubre).</li>
+    <li>La base es un registro administrativo: puede haber omisiones o errores de digitación, aunque se reconciliaron los códigos de entidad.</li>
+    <li>No incluye solicitudes en trámite ni las que nunca llegaron a SERVIR.</li></ul></div>
+  </div>
+ </section>
+</main>
+<footer><div class="wrap">Elaborado por Fiorella Becerril Mercado · Tarea 3, Python Intermedio (Diplomado Q-LAB PUCP), 2026 · Construido con Python, Chart.js y Leaflet, con apoyo de Claude (IA). Las cifras se verificaron contra la base procesada.</div></footer>
+
+<script id="data" type="application/json">__DATA__</script>
+<script id="geo" type="application/json">__GEO__</script>
+<script>
+const D=JSON.parse(document.getElementById('data').textContent);
+const GEO=JSON.parse(document.getElementById('geo').textContent);
+const C=D.cols, idx=Object.fromEntries(C.map((c,i)=>[c,i]));
+const R=D.rows.map(r=>Object.fromEntries(C.map((c,i)=>[c,r[i]])));
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const fmt=n=>n.toLocaleString('es-PE');
+const pct=x=>isFinite(x)?(x*100).toFixed(0)+' %':'–';
+const INST=['CAP-P','CPE','MPP'];
+const years=[...new Set(R.map(r=>r.anio))].sort((a,b)=>a-b);
+const st={inst:new Set(INST),nivel:'',reg:'',desde:years[0],hasta:years[years.length-1],q:''};
+
+const fD=document.getElementById('fDesde'),fH=document.getElementById('fHasta'),fR=document.getElementById('fReg');
+years.forEach(y=>{fD.add(new Option(y,y));fH.add(new Option(y,y))});fH.value=st.hasta;
+[...new Set(R.map(r=>r.region_mapa).filter(Boolean))].sort().forEach(x=>fR.add(new Option(x,x)));
+document.getElementById('metaN').textContent=fmt(R.length)+' opiniones técnicas';
+document.getElementById('mN').textContent=fmt(R.length);
+
+document.querySelectorAll('#fInst button').forEach(b=>b.onclick=()=>{
+  const i=b.dataset.i; if(st.inst.has(i)&&st.inst.size>1){st.inst.delete(i);b.classList.remove('on')}else{st.inst.add(i);b.classList.add('on')} draw()});
+document.getElementById('fNivel').onchange=e=>{st.nivel=e.target.value;draw()};
+fR.onchange=e=>{st.reg=e.target.value;draw()};
+fD.onchange=e=>{st.desde=+e.target.value;if(st.desde>st.hasta){st.hasta=st.desde;fH.value=st.hasta}draw()};
+fH.onchange=e=>{st.hasta=+e.target.value;if(st.hasta<st.desde){st.desde=st.hasta;fD.value=st.desde}draw()};
+document.getElementById('q').oninput=e=>{st.q=e.target.value.toLowerCase();drawTable(filt())};
+document.getElementById('reset').onclick=()=>{st.inst=new Set(INST);document.querySelectorAll('#fInst button').forEach(b=>b.classList.add('on'));
+  st.nivel='';st.reg='';st.desde=years[0];st.hasta=years[years.length-1];document.getElementById('fNivel').value='';fR.value='';fD.value=st.desde;fH.value=st.hasta;draw()};
+
+function filt(opts={}){return R.filter(r=>st.inst.has(r.instrumento)&&(!st.nivel||r.nivel===st.nivel)&&(opts.noReg||!st.reg||r.region_mapa===st.reg)&&r.anio>=st.desde&&r.anio<=st.hasta)}
+const obsRate=a=>a.length?a.filter(r=>r.opinion==='OBSERVADO').length/a.length:NaN;
+function count(a,k){const m={};a.forEach(r=>{const v=r[k];if(v!=null)m[v]=(m[v]||0)+1});return m}
+
+Chart.defaults.font.family='Inter, system-ui, sans-serif';Chart.defaults.font.size=12;
+const charts={};
+function mk(id,cfg){if(charts[id])charts[id].destroy();charts[id]=new Chart(document.getElementById(id),cfg)}
+function axes(extra={}){const g=css('--line'),t=css('--muted');Chart.defaults.color=t;
+  return {x:{grid:{display:false},ticks:{color:t},...(extra.x||{})},y:{grid:{color:g},ticks:{color:t},beginAtZero:true,...(extra.y||{})}}}
+
+function draw(){
+  const a=filt();
+  // KPIs
+  document.getElementById('k1').textContent=fmt(a.length);
+  document.getElementById('k1s').textContent=fmt(a.filter(r=>r.opinion==='FAVORABLE').length)+' favorables · '+fmt(a.filter(r=>r.opinion==='OBSERVADO').length)+' observadas';
+  const ent=new Set(a.filter(r=>r.opinion==='FAVORABLE').map(r=>r.id_entidad));
+  document.getElementById('k2').textContent=fmt(ent.size);
+  document.getElementById('k2s').textContent='de '+fmt(new Set(a.map(r=>r.id_entidad)).size)+' entidades con alguna opinión';
+  document.getElementById('k3').textContent=pct(obsRate(a));
+  const cr=Object.entries(count(a,'region')).sort((x,y)=>y[1]-x[1]);
+  document.getElementById('k4').textContent=cr.length?cr[0][0]:'–';
+  document.getElementById('k4s').textContent=cr.length?fmt(cr[0][1])+' opiniones ('+pct(cr[0][1]/a.length)+' del total)':'';
+  const fav=a.filter(r=>r.opinion==='FAVORABLE'&&r.momento!=='Sin dato');
+  document.getElementById('k5').textContent=pct(fav.filter(r=>r.momento==='Modificación').length/fav.length);
+
+  // Year x instrument
+  const ys=years.filter(y=>y>=st.desde&&y<=st.hasta);
+  mk('cAnio',{type:'bar',data:{labels:ys,datasets:INST.filter(i=>st.inst.has(i)).map(i=>({label:i==='CAP-P'?'CAP Provisional':i,
+    data:ys.map(y=>a.filter(r=>r.anio===y&&r.instrumento===i).length),backgroundColor:css(i==='CAP-P'?'--capp':i==='CPE'?'--cpe':'--mpp'),borderRadius:3}))},
+    options:{maintainAspectRatio:false,plugins:{legend:{position:'top',align:'end',labels:{boxWidth:10,color:css('--muted')}}},scales:{...axes(),x:{stacked:true,grid:{display:false},ticks:{color:css('--muted')}},y:{stacked:true,grid:{color:css('--line')},ticks:{color:css('--muted')}}}}});
+
+  // Regions (ignores region filter so you can compare)
+  const ar=filt({noReg:true});const regs=Object.entries(count(ar,'region_mapa')).sort((x,y)=>y[1]-x[1]).map(x=>x[0]);
+  const hl=r=>!st.reg||r===st.reg;
+  mk('cReg',{type:'bar',data:{labels:regs,datasets:[
+    {label:'Favorable',data:regs.map(g=>ar.filter(r=>r.region_mapa===g&&r.opinion==='FAVORABLE').length),backgroundColor:regs.map(g=>hl(g)?css('--fav'):css('--line'))},
+    {label:'Observado',data:regs.map(g=>ar.filter(r=>r.region_mapa===g&&r.opinion==='OBSERVADO').length),backgroundColor:regs.map(g=>hl(g)?css('--obs'):css('--line'))}]},
+    options:{indexAxis:'y',maintainAspectRatio:false,onClick:(e,el)=>{if(el.length){st.reg=regs[el[0].index]===st.reg?'':regs[el[0].index];fR.value=st.reg;draw()}},
+      plugins:{legend:{position:'top',align:'end',labels:{boxWidth:10,color:css('--muted')}}},
+      scales:{x:{stacked:true,grid:{color:css('--line')},ticks:{color:css('--muted')}},y:{stacked:true,grid:{display:false},ticks:{color:css('--muted'),autoSkip:false,font:{size:11}}}}}});
+
+  // Observation by level
+  const niv=['NACIONAL','REGIONAL','LOCAL'];
+  mk('cNivel',{type:'bar',data:{labels:niv.map(n=>n[0]+n.slice(1).toLowerCase()),datasets:[{label:'Tasa de observación',
+    data:niv.map(n=>{const s=a.filter(r=>r.nivel===n);return s.length?+(obsRate(s)*100).toFixed(1):null}),backgroundColor:css('--obs'),borderRadius:4}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' % de '+fmt(a.filter(r=>r.nivel===niv[c.dataIndex]).length)+' opiniones'}}},
+      scales:axes({y:{max:100,ticks:{callback:v=>v+' %',color:css('--muted')}}})}});
+
+  // Observation over time
+  const colN={NACIONAL:css('--capp'),REGIONAL:css('--mpp'),LOCAL:css('--obs')};
+  mk('cObsT',{type:'line',data:{labels:ys,datasets:niv.map(n=>({label:n[0]+n.slice(1).toLowerCase(),borderColor:colN[n],backgroundColor:colN[n],tension:0,spanGaps:true,pointRadius:3,
+    data:ys.map(y=>{const s=a.filter(r=>r.nivel===n&&r.anio===y);return s.length>=10?+(obsRate(s)*100).toFixed(1):null})}))},
+    options:{maintainAspectRatio:false,plugins:{legend:{position:'top',align:'end',labels:{boxWidth:10,color:css('--muted')}}},scales:axes({y:{max:100,ticks:{callback:v=>v+' %',color:css('--muted')}}})}});
+
+  drawMap(ar);drawTable(a);
+}
+
+// Map
+const map=L.map('map',{scrollWheelZoom:false,zoomSnap:.25}).setView([-9.3,-75],4.75);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png',{attribution:'© OpenStreetMap © CARTO · Límites: INEI',maxZoom:9}).addTo(map);
+let layer,info=L.control({position:'topright'});info.onAdd=()=>{const d=L.DomUtil.create('div','info');d.innerHTML='Pasa el cursor por una región';return d};info.addTo(map);
+function drawMap(a){
+  const cnt=count(a,'region_mapa'),max=Math.max(1,...Object.values(cnt));
+  const ramp=v=>{const t=Math.log(1+v)/Math.log(1+max);return `rgba(${Math.round(240-200*t)},${Math.round(230-120*t)},${Math.round(215-60*t)},.9)`};
+  if(layer)map.removeLayer(layer);
+  layer=L.geoJSON(GEO,{style:f=>{const n=f.properties.NOMBDEP,v=cnt[n]||0;return{fillColor:v?ramp(v):'#ddd',weight:st.reg===n?3:1,color:st.reg===n?css('--accent'):'#fff',fillOpacity:st.reg&&st.reg!==n?.35:.9}},
+    onEachFeature:(f,l)=>{const n=f.properties.NOMBDEP,s=a.filter(r=>r.region_mapa===n);
+      l.on({mouseover:()=>info.getContainer().innerHTML=`<b>${n}</b><br>${fmt(s.length)} opiniones · ${pct(obsRate(s))} observadas<br>${fmt(new Set(s.map(r=>r.id_entidad)).size)} entidades`,
+        mouseout:()=>info.getContainer().innerHTML='Pasa el cursor por una región',
+        click:()=>{st.reg=st.reg===n?'':n;fR.value=st.reg;draw()}})}}).addTo(map);
+}
+
+function drawTable(a){
+  const g={};a.forEach(r=>{const e=g[r.id_entidad]||(g[r.id_entidad]={e:r.entidad,reg:r.region,niv:r.nivel,'CAP-P':0,CPE:0,MPP:0,obs:0,ult:0});
+    e[r.instrumento]++;if(r.opinion==='OBSERVADO')e.obs++;e.ult=Math.max(e.ult,r.anio)});
+  let L2=Object.values(g);if(st.q)L2=L2.filter(e=>(e.e||'').toLowerCase().includes(st.q));
+  L2.sort((x,y)=>(y['CAP-P']+y.CPE+y.MPP)-(x['CAP-P']+x.CPE+x.MPP));
+  document.getElementById('tb').innerHTML=L2.slice(0,150).map(e=>`<tr><td>${e.e}</td><td>${e.reg||''}</td><td>${e.niv||''}</td><td class="n">${e['CAP-P']}</td><td class="n">${e.CPE}</td><td class="n">${e.MPP}</td><td class="n">${e.obs}</td><td class="n">${e.ult}</td></tr>`).join('');
+  document.getElementById('tbn').textContent=fmt(L2.length)+' entidades'+(L2.length>150?' · se muestran las 150 con más opiniones':'');
+}
+draw();
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',draw);
+</script>
+</body>
+</html>

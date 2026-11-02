@@ -1,0 +1,12 @@
+pandas>=2.0
+openpyxl>=3.1
+matplotlib>=3.8
+numpy>=1.26
+pillow>=10.0
+soundfile>=0.12
+imageio-ffmpeg>=0.5
+jiwer>=3.0
+num2words>=0.5
+# Solo para la voz clonada del reel:
+# qwen-tts
+# faster-whisper

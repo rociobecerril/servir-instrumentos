@@ -1,0 +1,58 @@
+{
+  "titulo": "¿Quién ordena su gente?",
+  "escenas": [
+    {
+      "frase": "Entre dos mil catorce y dos mil veintiséis, SERVIR emitió cuatro mil treinta y dos opiniones técnicas sobre cómo el Estado ordena a su personal.",
+      "cifra": "4,032",
+      "etiqueta": "opiniones técnicas, 2014–2026",
+      "imagen": "recursos/e1_anios.png",
+      "cifra_en_texto": true
+    },
+    {
+      "frase": "Nueve de cada diez fueron sobre el CAP Provisional, un cuadro de puestos pensado para ser temporal.",
+      "cifra": "90 %",
+      "etiqueta": "son sobre el CAP Provisional",
+      "imagen": "recursos/e2_instrumentos.png",
+      "cifra_en_texto": true
+    },
+    {
+      "frase": "Pero lo provisional se quedó: el sesenta y cinco por ciento de los informes favorables aprueba una modificación, no un primer cuadro.",
+      "cifra": "65 %",
+      "etiqueta": "de los favorables son modificaciones",
+      "imagen": "recursos/e3_modificaciones.png",
+      "cifra_en_texto": true
+    },
+    {
+      "frase": "Las municipalidades son las que más tropiezan: tres de cada cuatro propuestas locales reciben observaciones.",
+      "cifra": "74 %",
+      "etiqueta": "de propuestas locales observadas",
+      "imagen": "recursos/e4_nivel.png",
+      "cifra_en_texto": true
+    },
+    {
+      "frase": "La buena noticia: en dos mil veintiséis esa tasa bajó a cuarenta y uno por ciento.",
+      "cifra": "41 %",
+      "etiqueta": "observación local en 2026",
+      "imagen": "recursos/e5_local_tiempo.png",
+      "cifra_en_texto": true
+    },
+    {
+      "frase": "Mientras tanto, el tránsito al Servicio Civil avanza lento: ciento sesenta y siete entidades tienen un CPE favorable, frente a novecientas sesenta y seis con CAP Provisional.",
+      "cifra": "167 vs. 966",
+      "etiqueta": "entidades: CPE frente a CAP Provisional",
+      "imagen": "recursos/e6_transito.png",
+      "cifra_en_texto": true
+    },
+    {
+      "frase": "Explora el mapa y busca tu entidad en el tablero. El enlace está en la publicación.",
+      "cifra": "",
+      "etiqueta": "Explora el tablero",
+      "imagen": "recursos/e7_mapa.png",
+      "cifra_en_texto": true
+    }
+  ],
+  "hashtags": ["#ServicioCivil", "#GestiónPública", "#CienciaDeDatos", "#Python", "#Perú"],
+  "posts": {
+    "linkedin": "¿Quién ordena su gente en el Estado peruano?\n\nAnalicé 4,032 opiniones técnicas de SERVIR (2014–2026) sobre CAP Provisional, CPE y MPP y las convertí en un tablero interactivo.\n\nDos hallazgos:\n• El 65 % de los informes favorables de CAP Provisional aprueba modificaciones: el cuadro «provisional» se volvió permanente.\n• Tres de cada cuatro propuestas de municipalidades reciben observaciones, aunque en 2026 la tasa bajó a 41 %.\n\nTablero: [ENLACE]\nRepositorio: [ENLACE]\n\nLa voz del video fue generada con IA a partir de mi propia voz.\n\n#ServicioCivil #GestiónPública #CienciaDeDatos #Python #Perú"
+  }
+}
