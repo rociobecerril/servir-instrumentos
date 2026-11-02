@@ -6,7 +6,7 @@
 
 **Pregunta de investigación:** ¿Cómo han evolucionado entre 2014 y 2026 las opiniones técnicas de SERVIR sobre los instrumentos de gestión de puestos, en qué niveles de gobierno y regiones se concentran, y qué tan seguido se observan las propuestas?
 
-- **Dashboard público:** https://rociobecerril.github.io/intermedio-2026/tarea_3/web/
+- **Dashboard público:** https://rociobecerril.github.io/servir-instrumentos/tarea_3/web/
 - **Reel:** [`reel/reel.mp4`](reel/reel.mp4)
 - **Publicación de LinkedIn:** _(agregar enlace)_
 
